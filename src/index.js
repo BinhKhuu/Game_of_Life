@@ -3,29 +3,37 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import update from 'immutability-helper';
 
-class Square extends React.Component {
-	render() {
-		return (
-			<canvas className='col' style={{border:"1px solid black"}}></canvas>
-		)
-	}
-}
-
 class Board extends React.Component {
 	constructor() {
-		var max = 800;
+		var defaultMax = 800;
 		super();
-		var row = Array(max).fill(null);
-		var board = row.map(col => {
-			return Array(max).fill(null);
-		});
+		var board = this.gen2DArray(defaultMax);
 		this.state = {
-			size: [max,max],
+			size: [defaultMax,defaultMax],
 			board: board,
-			pixel: 10,
+			pixel: 5,
+			generations: 10000,
+			currGen: 0,
 		}
+		this.gen2DArray = this.gen2DArray.bind(this);
 		this.drawGame = this.drawGame.bind(this); 
 		this.getNeighbourCount= this.getNeighbourCount.bind(this);
+		this.setBoardSize = this.setBoardSize.bind(this);
+	}
+	setBoardSize(pixels){
+		var board = this.gen2DArray(pixels);
+		this.setState({
+			size:[pixels,pixels],
+			board: board,
+		});
+	}
+	gen2DArray(size){
+		size = parseInt(size);
+		var row = Array(size).fill(null);
+		var  arr2D = row.map(col => {
+			return Array(size).fill(null);
+		});
+		return arr2D; 
 	}
 
 	generateLife() {
@@ -43,10 +51,6 @@ class Board extends React.Component {
 				
 			}
 		}
-		//boardCopy[50][30] = 1;
-		boardCopy[40][40] = 1;
-		boardCopy[50][40] = 1;
-		boardCopy[60][40] = 1;
 		return boardCopy;
 	}
 	//apply the game of life rules to current game
@@ -57,70 +61,27 @@ class Board extends React.Component {
 		for(var i = 0; i < this.state.size[0]; i+= this.state.pixel) {
 			for(var j = 0; j < this.state.size[1]; j+= this.state.pixel) {
 				var neighbours = this.getNeighbourCount(board,i,j);
+				//apply game rules 1 = life, 0 = death
 				if(board[i][j] === 1) {
-					if (neighbours < 2) {boardCopy[i][j] = 0; /*alert(i +", "+", " + j + ": "+ neighbours)*/}
-					else if((neighbours >= 2) && (neighbours <= 3)) {boardCopy[i][j] = 1; /*alert(i +", "+", " + j + ": "+ neighbours)*/}
-					else if(neighbours > 3) {boardCopy[i][j] = 0;/*alert(i +", "+", " + j + ": "+ neighbours)*/}
-				} else if(board[i][j] !== 1 && neighbours == 3) {
-					boardCopy[i][j] = 1;
-					//alert(i +", "+", " + j + ": "+ neighbours)
+					//rule 1. Any live cell with fewer than two live neighbours dies, as if caused by underpopulation.
+					if (neighbours < 2) boardCopy[i][j] = 0;
+					//rule 2. Any live cell with two or three live neighbours lives on to the next generation.
+					else if((neighbours >= 2) && (neighbours <= 3)) boardCopy[i][j] = 1;
+					//rule 3. Any live cell with more than three live neighbours dies, as if by overpopulation.
+					else if(neighbours > 3) boardCopy[i][j] = 0;
+				} else  {
+					//rule 4. Any dead cell with exactly three live neighbours becomes a live cell, as if by reproduction.
+					if(board[i][j] !== 1 && neighbours == 3) boardCopy[i][j] = 1;		
 				}
 			}
 		}
 		return boardCopy;
 	}
+	//count number of live neighbours 
 	getNeighbourCount(board, i,j){
 		var max = this.state.size[0] -1;
 		var jump = this.state.pixel;
 		var count = 0;
-		//check if edge
-		/*
-		if(i + this.state.pixel <= this.state.size[0]-1){
-			if(board[i+this.state.pixel][j] === 1) {count += 1;}
-		}
-		if(j + this.state.pixel <= this.state.size[1]-1){
-			if(board[i][j+this.state.pixel] === 1) {
-				count += 1; 
-				if(i === 50 && j === 30) {
-					alert("+j " + count);
-
-				}
-			}
-		}
-		if(i + this.state.pixel <= this.state.size[0]-1 && j + this.state.pixel <= this.state.size[1]-1) {
-			if(board[i+this.state.pixel][j+this.state.pixel] === 1) {count += 1; }
-					if(i === 50 && j === 30) {
-			alert("++ij " + count);
-		}
-		}
-		if(i - this.state.pixel >= 0) {
-			if(board[i-this.state.pixel][j] === 1) {count += 1;}
-		}
-		if(j - this.state.pixel >= 0 ) {
-			if(board[i][j-this.state.pixel] === 1) {count += 1; }
-		}
-		if((i - this.state.pixel >= 0) && j - (this.state.pixel >= 0)) {
-			var ii = i - 10;
-			var jj = j - 10;
-
-			if(board[i-this.state.pixel][j-this.state.pixel] === 1) {count += 1;}
-					if(i === 50 && j === 30) {
-			alert("--ij " + count);
-			alert(ii + ":" + jj);
-		}
-		}
-		if((j + this.state.pixel > this.state.size[1]) && (j - this.state.pixel >= 0)) {
-			if(board[i+this.state.pixel][j-this.state.pixel] === 1) {count += 1;}
-		}
-		if((i - this.state.pixel >=0) && (j + this.state.pixel > this.state.size[0])) {
-			if(board[i-this.state.pixel][j+this.state.pixel] === 1) {count += 1;}
-		}
-
-		if(i - this.state.pixel >= 0 && j + this.state.pixel <=this.state.pixel) count += 1;
-				if(i === 50 && j === 30) {
-			alert("neighours: " +count);
-		}
-		*/
 		if(i + jump <= max) {
 			if(board[i+jump][j] === 1) count += 1;
 		}
@@ -148,8 +109,11 @@ class Board extends React.Component {
 		return count;
 	}
 	drawGame() {
+		//set button to disable accessed by ref attribute
 		this.start.setAttribute("disabled", "disabled");
-		var generations = 200;
+		this.res.setAttribute("disabled", "disabled");
+		this.gen.setAttribute("disabled", "disabled");
+		var generations = this.state.generations;
 		var year = 0;
 		var copy = this.generateLife();
 		var board = document.getElementById('board');
@@ -164,20 +128,40 @@ class Board extends React.Component {
 					}
 				}
 				copy = this.gameOfLife(copy);
+				this.setState({currGen: year});
 				year += 1;
 				if(year == generations) {
 					clearInterval(runGame);
 					this.start.removeAttribute("disabled");
+					this.res.removeAttribute("disabled");
+					this.gen.removeAttribute("disabled");
 				}
-			},500);
+			},50);
 		});
 	}
 	render() {
 		return (
 			<div>
-				<canvas id='board' width={this.state.size[0].toString()} height={this.state.size[1].toString()} style={{border:"1px solid black"}}>
-				</canvas>
-				<button ref={start => {this.start = start;}} onClick={() => this.drawGame()}>clickme</button>
+				<div id='game'>
+					<canvas id='board' width={this.state.size[0].toString()} height={this.state.size[1].toString()} style={{border:"1px solid black"}}>
+					</canvas>
+				</div>
+				<div id="options">
+					<button ref={start => {this.start = start;}} onClick={() => this.drawGame()}>start</button>
+					<select ref={res => {this.res = res;}} onChange={(option)=> this.setBoardSize(option.target.value)}>
+						<option value="800">800x800</option>
+						<option value="1000">1000x1000</option>
+						<option value="600">600x600</option>
+						<option value="400">400x400</option>
+					</select>
+					<select ref={gen => {this.gen = gen;}} onChange={(option)=> this.setState({generations: option.target.value})}>
+						<option value="10000">Generations: 10000</option>
+						<option value="5000">Generations: 5000</option>
+						<option value="1000">Generaions: 1000</option>
+						<option value="500">Generations: 500</option>
+					</select>
+					<span ref={currGen => {this.currGen = currGen;}}>Current Generation: {this.state.currGen} </span>
+				</div>
 			</div>
 		);
 	}
