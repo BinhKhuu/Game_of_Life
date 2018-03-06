@@ -142,25 +142,25 @@ class Board extends React.Component {
 	render() {
 		return (
 			<div>
-				<div id='game'>
-					<canvas id='board' width={this.state.size[0].toString()} height={this.state.size[1].toString()} style={{border:"1px solid black"}}>
-					</canvas>
+				<h1 align="center">Conway's Game of Life</h1>
+				<div id='boardContainer' align="center">
+					<canvas id='board' width={this.state.size[0].toString()} height={this.state.size[1].toString()}></canvas>
 				</div>
-				<div id="options">
-					<button ref={start => {this.start = start;}} onClick={() => this.drawGame()}>start</button>
-					<select ref={res => {this.res = res;}} onChange={(option)=> this.setBoardSize(option.target.value)}>
+				<div id="options" align="center">
+					<button className="optionMenu" ref={start => {this.start = start;}} onClick={() => this.drawGame()}>START</button>
+					<select className="optionMenu" ref={res => {this.res = res;}} onChange={(option)=> this.setBoardSize(option.target.value)}>
 						<option value="800">800x800</option>
-						<option value="1000">1000x1000</option>
+						<option value="700">700x700</option>
 						<option value="600">600x600</option>
-						<option value="400">400x400</option>
+						<option value="500">500x500</option>
 					</select>
-					<select ref={gen => {this.gen = gen;}} onChange={(option)=> this.setState({generations: option.target.value})}>
-						<option value="10000">Generations: 10000</option>
+					<select className="optionMenu" ref={gen => {this.gen = gen;}} onChange={(option)=> this.setState({generations: option.target.value})}>
+						<option value="10000"><p>Generations: 10000</p></option>
 						<option value="5000">Generations: 5000</option>
 						<option value="1000">Generaions: 1000</option>
 						<option value="500">Generations: 500</option>
 					</select>
-					<span ref={currGen => {this.currGen = currGen;}}>Current Generation: {this.state.currGen} </span>
+					<span ref={currGen => {this.currGen = currGen;}}> Current Generation: {this.state.currGen} </span>
 				</div>
 			</div>
 		);
