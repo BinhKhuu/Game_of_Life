@@ -7,18 +7,29 @@ class Board extends React.Component {
 	constructor() {
 		var defaultMax = 800;
 		super();
-		var board = this.gen2DArray(defaultMax);
+		var game = this.gen2DArray(defaultMax);
 		this.state = {
 			size: [defaultMax,defaultMax],
-			board: board,
+			board: game,
 			pixel: 5,
 			generations: 10000,
-			currGen: 0,
+			currYear: 0,
+			pause: false,
 		}
+		this.setBoard = this.setBoard.bind(this);
+		this.copyBoard = this.copyBoard.bind(this);
 		this.gen2DArray = this.gen2DArray.bind(this);
-		this.drawGame = this.drawGame.bind(this); 
+		this.runGame = this.runGame.bind(this); 
 		this.getNeighbourCount= this.getNeighbourCount.bind(this);
 		this.setBoardSize = this.setBoardSize.bind(this);
+		this.handleStart = this.handleStart.bind(this);
+		this.handlePause = this.handlePause.bind(this);
+		this.toggleStartPause = this.toggleStartPause.bind(this);
+	}
+	componentDidMount(){
+		var game = this.copyBoard(game);
+		game = this.setBoard(game);
+		this.setState({board:game});
 	}
 	setBoardSize(pixels){
 		var board = this.gen2DArray(pixels);
@@ -36,108 +47,134 @@ class Board extends React.Component {
 		return arr2D; 
 	}
 
-	generateLife() {
-		var boardCopy = this.state.board.map(col => {
-			return col.slice();
-		}) 
+	setBoard(board) { 
 		for(var i = 0; i < this.state.size[0]; i += this.state.pixel) {
 			for(var j = 0; j < this.state.size[1]; j+= this.state.pixel) {
-				var life = Math.floor((Math.random() * Math.floor(5)))
+				var life = Math.floor((Math.random() * Math.floor(3)))
 				if(life == 1) {
-					boardCopy[i][j] = life;	
+					board[i][j] = life;	
 				} else {
-					boardCopy[i][j] = 0;
+					board[i][j] = 0;
 				}
 				
 			}
 		}
-		return boardCopy;
+		return board;
 	}
-	//apply the game of life rules to current game
-	gameOfLife(board){
-		var boardCopy = board.map(col => {
+	copyBoard(copy){
+		copy = this.state.board.map((col) => {
+			return col.slice(0);
+		});
+		return copy;
+	}
+	/* apply the game of life rules
+	 * create copy of current generation and use the copy to simulate next generation
+	 * returns next generation
+	*/
+	gameOfLife(currGen){
+		var nextGen = currGen.map(col => {
 			return col.slice(0);
 		});
 		for(var i = 0; i < this.state.size[0]; i+= this.state.pixel) {
 			for(var j = 0; j < this.state.size[1]; j+= this.state.pixel) {
-				var neighbours = this.getNeighbourCount(board,i,j);
+				var neighbours = this.getNeighbourCount(currGen,i,j);
 				//apply game rules 1 = life, 0 = death
-				if(board[i][j] === 1) {
+				if(currGen[i][j] === 1) {
 					//rule 1. Any live cell with fewer than two live neighbours dies, as if caused by underpopulation.
-					if (neighbours < 2) boardCopy[i][j] = 0;
+					if (neighbours < 2) nextGen[i][j] = 0;
 					//rule 2. Any live cell with two or three live neighbours lives on to the next generation.
-					else if((neighbours >= 2) && (neighbours <= 3)) boardCopy[i][j] = 1;
+					else if((neighbours >= 2) && (neighbours <= 3)) nextGen[i][j] = 1;
 					//rule 3. Any live cell with more than three live neighbours dies, as if by overpopulation.
-					else if(neighbours > 3) boardCopy[i][j] = 0;
+					else if(neighbours > 3) nextGen[i][j] = 0;
 				} else  {
 					//rule 4. Any dead cell with exactly three live neighbours becomes a live cell, as if by reproduction.
-					if(board[i][j] !== 1 && neighbours == 3) boardCopy[i][j] = 1;		
+					if(currGen[i][j] !== 1 && neighbours == 3) nextGen[i][j] = 1;		
 				}
 			}
 		}
-		return boardCopy;
+		return nextGen;
 	}
 	//count number of live neighbours 
-	getNeighbourCount(board, i,j){
+	getNeighbourCount(currGen, i,j){
 		var max = this.state.size[0] -1;
 		var jump = this.state.pixel;
 		var count = 0;
 		if(i + jump <= max) {
-			if(board[i+jump][j] === 1) count += 1;
+			if(currGen[i+jump][j] === 1) count += 1;
 		}
 		if(i + jump <= max && j - jump >=0) {
-			if(board[i+jump][j-jump] === 1) count += 1;
+			if(currGen[i+jump][j-jump] === 1) count += 1;
 		}
 		if(i + jump <= max && j + jump <= max) {
-			if(board[i+jump][j + jump] === 1) count += 1;
+			if(currGen[i+jump][j + jump] === 1) count += 1;
 		}
 		if(i - jump >= 0) {
-			if(board[i-jump][j] === 1) count += 1;
+			if(currGen[i-jump][j] === 1) count += 1;
 		}
 		if(i - jump >= 0 && j - jump >=0) {
-			if(board[i-jump][j - jump] === 1) count += 1;
+			if(currGen[i-jump][j - jump] === 1) count += 1;
 		}
 		if(i - jump >= 0 && j + jump <= max) {
-			if(board[i-jump][j + jump] === 1) count += 1;
+			if(currGen[i-jump][j + jump] === 1) count += 1;
 		}
 		if(j + jump <= max) {
-			if(board[i][j+jump] === 1) count += 1;
+			if(currGen[i][j+jump] === 1) count += 1;
 		}
 		if(j - jump >= 0) {
-			if(board[i][j-jump] === 1) count += 1;
+			if(currGen[i][j-jump] === 1) count += 1;
 		}
 		return count;
 	}
-	drawGame() {
-		//set button to disable accessed by ref attribute
-		this.start.setAttribute("disabled", "disabled");
+
+	runGame() {
+		var generations = this.state.generations;
+		var year = this.state.currYear;
+		var currGen = this.copyBoard();
+		var canvas = document.getElementById('board');
+		var ctx = canvas.getContext('2d');
+		ctx.fillStyle = "#FF0000";
+		var runGame = setInterval(()=>{
+			ctx.clearRect(0,0,this.state.size[0],this.state.size[1]);
+			for(var i = 0; i < this.state.size[0]; i += this.state.pixel) {
+				for(var j = 0; j < this.state.size[1]; j += this.state.pixel) {
+					if(currGen[i][j] === 1) ctx.fillRect(i,j,this.state.pixel,this.state.pixel);
+				}
+			}
+			currGen = this.gameOfLife(currGen);
+			this.setState({currYear: year});
+			year += 1;
+			if(year == generations) {
+				clearInterval(runGame);
+				this.start.removeAttribute("disabled");
+				this.res.removeAttribute("disabled");
+				this.gen.removeAttribute("disabled");
+			} else if (this.state.pause) {
+				clearInterval(runGame);
+				this.setState({board: currGen});
+			}
+		},70);
+	}
+	handlePause(gameID){
+		this.start.removeAttribute("disabled");
+		this.setState({pause: true});
+		this.toggleStartPause(true);
+	}
+	handleStart(gameID){
 		this.res.setAttribute("disabled", "disabled");
 		this.gen.setAttribute("disabled", "disabled");
-		var generations = this.state.generations;
-		var year = 0;
-		var copy = this.generateLife();
-		var board = document.getElementById('board');
-		var ctx = board.getContext('2d');
-		this.setState({board: copy},() => {
-			ctx.fillStyle = "#FF0000";
-			var runGame = setInterval(()=>{
-				ctx.clearRect(0,0,this.state.size[0],this.state.size[1]);
-				for(var i = 0; i < this.state.size[0]; i += this.state.pixel) {
-					for(var j = 0; j < this.state.size[1]; j += this.state.pixel) {
-						if(copy[i][j] === 1) ctx.fillRect(i,j,this.state.pixel,this.state.pixel);
-					}
-				}
-				copy = this.gameOfLife(copy);
-				this.setState({currGen: year});
-				year += 1;
-				if(year == generations) {
-					clearInterval(runGame);
-					this.start.removeAttribute("disabled");
-					this.res.removeAttribute("disabled");
-					this.gen.removeAttribute("disabled");
-				}
-			},50);
-		});
+		this.setState({pause:false});
+		this.toggleStartPause(false);
+		this.runGame();
+		
+	}
+	toggleStartPause(pause){
+		if(!pause){
+			this.pause.removeAttribute("hidden");
+			this.start.setAttribute("hidden", "true");
+		} else {
+			this.start.removeAttribute("hidden");
+			this.pause.setAttribute("hidden", "true");
+		}
 	}
 	render() {
 		return (
@@ -147,7 +184,8 @@ class Board extends React.Component {
 					<canvas id='board' width={this.state.size[0].toString()} height={this.state.size[1].toString()}></canvas>
 				</div>
 				<div id="options" align="center">
-					<button className="optionMenu" ref={start => {this.start = start;}} onClick={() => this.drawGame()}>START</button>
+					<button className="optionMenu" ref={start => {this.start = start;}} onClick={() => this.handleStart()}>START</button>
+					<button hidden className="optionMenu" ref={pause => {this.pause = pause;}} onClick={() => this.handlePause()}>PAUSE</button>
 					<select className="optionMenu" ref={res => {this.res = res;}} onChange={(option)=> this.setBoardSize(option.target.value)}>
 						<option value="800">800x800</option>
 						<option value="700">700x700</option>
@@ -160,7 +198,7 @@ class Board extends React.Component {
 						<option value="1000">Generaions: 1000</option>
 						<option value="500">Generations: 500</option>
 					</select>
-					<span ref={currGen => {this.currGen = currGen;}}> Current Generation: {this.state.currGen} </span>
+					<span> Current Generation: {this.state.currYear} </span>
 				</div>
 			</div>
 		);

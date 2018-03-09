@@ -21,6 +21,10 @@ body {
 	border: 3px solid grey;
 }
 
+#pauseBtn {
+	visibility: hidden;
+}
+
 canvas {
 	background: black;
 	position: absolute;
