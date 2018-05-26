@@ -179,7 +179,7 @@ class Board extends React.Component {
 	render() {
 		return (
 			<div>
-				<h1 align="center">Conway's Game of Life</h1>
+				<h1 align="center">Conways Game of Life</h1>
 				<div id='boardContainer' align="center">
 					<canvas id='board' width={this.state.size[0].toString()} height={this.state.size[1].toString()}></canvas>
 				</div>
