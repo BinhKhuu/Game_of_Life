@@ -218,6 +218,7 @@ class Board extends React.Component {
 			this.pause.setAttribute("hidden", "true");
 		}
 	}
+<<<<<<< HEAD
   
   render() {
     return(
@@ -251,6 +252,19 @@ class Board extends React.Component {
 					<select 
             ref={res => {this.res = res;}} 
             onChange={(option)=> this.setBoardSize(option.target.value)}>
+=======
+	render() {
+		return (
+			<div>
+				<h1 align="center">Conways Game of Life</h1>
+				<div id='boardContainer' align="center">
+					<canvas id='board' width={this.state.size[0].toString()} height={this.state.size[1].toString()}></canvas>
+				</div>
+				<div id="options" align="center">
+					<button className="optionMenu" ref={start => {this.start = start;}} onClick={() => this.handleStart()}>START</button>
+					<button hidden className="optionMenu" ref={pause => {this.pause = pause;}} onClick={() => this.handlePause()}>PAUSE</button>
+					<select className="optionMenu" ref={res => {this.res = res;}} onChange={(option)=> this.setBoardSize(option.target.value)}>
+>>>>>>> 7c74f021bf6144f6ff74c4125e763786bed3d972
 						<option value="800">800x800</option>
 						<option value="700">700x700</option>
 						<option value="600">600x600</option>

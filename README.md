@@ -13,4 +13,8 @@ Conway's Game of life Simulator
   4. run npm start
   5. go to local host:3000
 
+
+#### /src 
+  1. index.js - main component
+  2. index.css
 *Author: Binh Khuu
