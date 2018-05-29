@@ -219,61 +219,61 @@ class Board extends React.Component {
 		}
 	}
   
-  render() {
-    return(
-  		<div>
-	        <h1>
-	          <a 
-	            href="https://en.wikipedia.org/wiki/Conway%27s_Game_of_Life" 
-	            target="_blank">
-	            Conways Game of Life
-	          </a>
-	        </h1>
-			<div id='boardContainer'>
-				<canvas 
-		            id='board' 
-		            width={this.state.size[0].toString()} 
-		            height={this.state.size[1].toString()}
-	            >
-	          	</canvas>
-			</div>        
-        	<div className="optionMenu">
-				<button 
-            		ref={start => {this.start = start;}} 
-            		onClick={() => this.handleStart()}
-        		>
-            		START
-          		</button>
-				<button 
-            		hidden 
-		            ref={pause => {this.pause = pause;}} 
-		            onClick={() => this.handlePause()}
-	            >
-		            PAUSE
-         		</button>
-				<select 
-		            ref={res => {this.res = res;}} 
-		            onChange={(option)=> this.setBoardSize(option.target.value)}>
-						<option value="800">800x800</option>
-						<option value="700">700x700</option>
-						<option value="600">600x600</option>
-						<option value="500">500x500</option>
-				>
-				</select>
-      			<select 
-            		ref={gen => {this.gen = gen;}} 
-            		onChange={(option)=> this.setState({generations: option.target.value})}
-        		>
-					<option value="10000"><p>Generations: 10000</p></option>
-					<option value="5000">Generations: 5000</option>
-					<option value="1000">Generaions: 1000</option>
-					<option value="500">Generations: 500</option>
-				</select>
-          		<span> Current Generation: {this.state.currYear} </span>      
-    		</div>
-		</div>
-    );
-  }
+	render() {
+	    return(
+	  		<div>
+		        <h1>
+		          <a 
+		            href="https://en.wikipedia.org/wiki/Conway%27s_Game_of_Life" 
+		            target="_blank">
+		            Conways Game of Life
+		          </a>
+		        </h1>
+				<div id='boardContainer'>
+					<canvas 
+			            id='board' 
+			            width={this.state.size[0].toString()} 
+			            height={this.state.size[1].toString()}
+		            >
+		          	</canvas>
+				</div>        
+	        	<div className="optionMenu">
+					<button 
+	            		ref={start => {this.start = start;}} 
+	            		onClick={() => this.handleStart()}
+	        		>
+	            		START
+	          		</button>
+					<button 
+	            		hidden 
+			            ref={pause => {this.pause = pause;}} 
+			            onClick={() => this.handlePause()}
+		            >
+			            PAUSE
+	         		</button>
+					<select 
+			            ref={res => {this.res = res;}} 
+			            onChange={(option)=> this.setBoardSize(option.target.value)}>
+							<option value="800">800x800</option>
+							<option value="700">700x700</option>
+							<option value="600">600x600</option>
+							<option value="500">500x500</option>
+					>
+					</select>
+	      			<select 
+	            		ref={gen => {this.gen = gen;}} 
+	            		onChange={(option)=> this.setState({generations: option.target.value})}
+	        		>
+						<option value="10000"><p>Generations: 10000</p></option>
+						<option value="5000">Generations: 5000</option>
+						<option value="1000">Generaions: 1000</option>
+						<option value="500">Generations: 500</option>
+					</select>
+	          		<span> Current Generation: {this.state.currYear} </span>      
+	    		</div>
+			</div>
+	    );
+	}
 }
 
 ReactDOM.render(
