@@ -221,7 +221,7 @@ class Board extends React.Component {
   
 	render() {
 	    return(
-	  		<div>
+			<div>
 		        <h1>
 		          <a 
 		            href="https://en.wikipedia.org/wiki/Conway%27s_Game_of_Life" 
