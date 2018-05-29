@@ -1,16 +1,19 @@
 html {
-
+  min-height: 1000px;
 }
 body {
+  
 	font-family: Courier New ;
 }
 
 .optionMenu {
+  text-align: center;
 	margin-top: 20px;
 	font-family: Courier New ;
 }
 
 #boardContainer {
+  text-align: center;
 	margin: auto;
 	width: 50%;
 	height: 800px;
@@ -19,20 +22,18 @@ body {
 
 #board {
 	border: 3px solid grey;
+  margin: auto;
+  background:black;
 }
 
 #pauseBtn {
 	visibility: hidden;
 }
 
-canvas {
-	background: black;
-	position: absolute;
-  	left: 50%;
-  	top: 50%;
-  	-webkit-transform: translate(-50%, -47.2%);
-  	transform: translate(-50%, -47.2%);
+h1 {
+  text-align: center;
 }
+
 
 
 
