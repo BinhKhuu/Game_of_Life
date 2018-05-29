@@ -4,15 +4,15 @@ import './index.css';
 
 
 class Board extends React.Component {
-  /**
-   *states
-   *@size, size of canvas Length and Width
-   *@board, current Game
-   *@pixel, size of pixel (square) for live squares
-   *@generations, limit for how many times the game will run
-   *@currYear, current interation in @generations
-   *@pause, toggler for pause/start button, false = start, true = pause
-  */
+	/**
+	*states
+	*@size, size of canvas Length and Width
+	*@board, current Game
+	*@pixel, size of pixel (square) for live squares
+	*@generations, limit for how many times the game will run
+	*@currYear, current interation in @generations
+	*@pause, toggler for pause/start button, false = start, true = pause
+	*/
 	constructor() {
 		var defaultMax = 800;
 		super();
@@ -50,10 +50,10 @@ class Board extends React.Component {
 		});
 	}
   
-  /* create a 2D array
-   * @size, legnth and width of array
-   * @return, 2D array of @size length and width with null place holder values
-  */
+	/* create a 2D array
+	* @size, legnth and width of array
+	* @return, 2D array of @size length and width with null place holder values
+	*/
 	gen2DArray(size){
 		size = parseInt(size);
 		var row = Array(size).fill(null);
@@ -63,9 +63,9 @@ class Board extends React.Component {
 		return arr2D; 
 	}
 
-  /* Fill in a 2D array (game) with random life values
-   * @board, 2D array to fill
-  */
+	/* Fill in a 2D array (game) with random life values
+	* @board, 2D array to fill
+	*/
 	setBoard(board) { 
 		for(var i = 0; i < this.state.size[0]; i += this.state.pixel) {
 			for(var j = 0; j < this.state.size[1]; j+= this.state.pixel) {
@@ -80,10 +80,10 @@ class Board extends React.Component {
 		return board;
 	}
   
-  /* Make a deep copy of the state variable @board (2D array)
-   * @copy, 2D array to copy
-   * @return, copy of state varaible @board
-  */
+	/* Make a deep copy of the state variable @board (2D array)
+	* @copy, 2D array to copy
+	* @return, copy of state varaible @board
+	*/
 	copyBoard(copy){
 		copy = this.state.board.map((col) => {
 			return col.slice(0);
@@ -92,7 +92,7 @@ class Board extends React.Component {
 	}
 	/* apply the game of life rules
 	 * create copy of current generation and use the copy to simulate next generation
-   * @currGen, game (2D array) at its current generation
+	* @currGen, game (2D array) at its current generation
 	 * @return, next simulated generation (2d array) 
 	*/
 	gameOfLife(currGen){
@@ -119,11 +119,11 @@ class Board extends React.Component {
 		return nextGen;
 	}
 	/* count number of live neighbours
-   * @currGen, current Game generation (2D array)
-   * @i, index for rows
-   * @j, index for colums
-   * @return, count of neighbours in relation to life at @i and @j
-   */
+	* @currGen, current Game generation (2D array)
+	* @i, index for rows
+	* @j, index for colums
+	* @return, count of neighbours in relation to life at @i and @j
+	*/
 	getNeighbourCount(currGen, i,j){
 		var max = this.state.size[0] -1;
 		var jump = this.state.pixel;
@@ -156,15 +156,15 @@ class Board extends React.Component {
 	}
 
 	runGame() {
-    //set up game variables
+    	//set up game variables
 		var generations = this.state.generations;
 		var year = this.state.currYear;
 		var currGen = this.copyBoard();
 		var canvas = document.getElementById('board');
 		var ctx = canvas.getContext('2d');
-    //color in canvas (game board)
+    	//color in canvas (game board)
 		ctx.fillStyle = "#FF0000";
-    //run game to states@generation intervals
+    	//run game to states@generation intervals
 		var runGame = setInterval(()=>{
 			ctx.clearRect(0,0,this.state.size[0],this.state.size[1]);
 			for(var i = 0; i < this.state.size[0]; i += this.state.pixel) {
@@ -172,9 +172,9 @@ class Board extends React.Component {
 					if(currGen[i][j] === 1) ctx.fillRect(i,j,this.state.pixel,this.state.pixel);
 				}
 			}
-      //apply game rules and get next generation simulation
+      		//apply game rules and get next generation simulation
 			currGen = this.gameOfLife(currGen);
-      //set up next generation variables
+      		//set up next generation variables
 			this.setState({currYear: year});
 			year += 1;
 			if(year == generations) {
@@ -188,7 +188,7 @@ class Board extends React.Component {
 			}
 		},70);
 	}
-  /* pauses game at current generation
+	/* pauses game at current generation
    * @gameID, id for pausing interval 
    */
 	handlePause(gameID){
@@ -196,9 +196,9 @@ class Board extends React.Component {
 		this.setState({pause: true});
 		this.toggleStartPause(true);
 	}
-  /* starts game from current generation 
-   * @gameID, id for pausing interval 
-   */
+	/* starts game from current generation 
+	* @gameID, id for pausing interval 
+	*/
 	handleStart(gameID){   
 		this.res.setAttribute("disabled", "disabled");   
 		this.gen.setAttribute("disabled", "disabled");  
@@ -206,9 +206,9 @@ class Board extends React.Component {
 		this.toggleStartPause(false);   
 		this.runGame();	
 	}
-  /* show start or pause button
-   * @pause, boolean to show start or pause button, true = pause, false = start
-   */
+	/* show start or pause button
+	* @pause, boolean to show start or pause button, true = pause, false = start
+	*/
 	toggleStartPause(pause){
 		if(!pause){
 			this.pause.removeAttribute("hidden");
@@ -218,69 +218,60 @@ class Board extends React.Component {
 			this.pause.setAttribute("hidden", "true");
 		}
 	}
-<<<<<<< HEAD
   
   render() {
     return(
-      <div>
-        <h1>
-          <a 
-            href="https://en.wikipedia.org/wiki/Conway%27s_Game_of_Life" 
-            target="_blank">
-            Conways Game of Life
-          </a>
-        </h1>
-				<div id='boardContainer'>
-					<canvas 
-            id='board' 
-            width={this.state.size[0].toString()} 
-            height={this.state.size[1].toString()}>
-          </canvas>
-				</div>        
-        <div className="optionMenu">
-					<button 
-            ref={start => {this.start = start;}} 
-            onClick={() => this.handleStart()}>
-            START
-          </button>
-					<button 
-            hidden 
-            ref={pause => {this.pause = pause;}} 
-            onClick={() => this.handlePause()}>
-            PAUSE
-          </button>
-					<select 
-            ref={res => {this.res = res;}} 
-            onChange={(option)=> this.setBoardSize(option.target.value)}>
-=======
-	render() {
-		return (
-			<div>
-				<h1 align="center">Conways Game of Life</h1>
-				<div id='boardContainer' align="center">
-					<canvas id='board' width={this.state.size[0].toString()} height={this.state.size[1].toString()}></canvas>
-				</div>
-				<div id="options" align="center">
-					<button className="optionMenu" ref={start => {this.start = start;}} onClick={() => this.handleStart()}>START</button>
-					<button hidden className="optionMenu" ref={pause => {this.pause = pause;}} onClick={() => this.handlePause()}>PAUSE</button>
-					<select className="optionMenu" ref={res => {this.res = res;}} onChange={(option)=> this.setBoardSize(option.target.value)}>
->>>>>>> 7c74f021bf6144f6ff74c4125e763786bed3d972
+  		<div>
+	        <h1>
+	          <a 
+	            href="https://en.wikipedia.org/wiki/Conway%27s_Game_of_Life" 
+	            target="_blank">
+	            Conways Game of Life
+	          </a>
+	        </h1>
+			<div id='boardContainer'>
+				<canvas 
+		            id='board' 
+		            width={this.state.size[0].toString()} 
+		            height={this.state.size[1].toString()}
+	            >
+	          	</canvas>
+			</div>        
+        	<div className="optionMenu">
+				<button 
+            		ref={start => {this.start = start;}} 
+            		onClick={() => this.handleStart()}
+        		>
+            		START
+          		</button>
+				<button 
+            		hidden 
+		            ref={pause => {this.pause = pause;}} 
+		            onClick={() => this.handlePause()}
+	            >
+		            PAUSE
+         		</button>
+				<select 
+		            ref={res => {this.res = res;}} 
+		            onChange={(option)=> this.setBoardSize(option.target.value)}>
 						<option value="800">800x800</option>
 						<option value="700">700x700</option>
 						<option value="600">600x600</option>
 						<option value="500">500x500</option>
-					</select>
-          <select 
-            ref={gen => {this.gen = gen;}} 
-            onChange={(option)=> this.setState({generations: option.target.value})}>
-						<option value="10000"><p>Generations: 10000</p></option>
-						<option value="5000">Generations: 5000</option>
-						<option value="1000">Generaions: 1000</option>
-						<option value="500">Generations: 500</option>
-					</select>
-          <span> Current Generation: {this.state.currYear} </span>      
-        </div>
-      </div>
+				>
+				</select>
+      			<select 
+            		ref={gen => {this.gen = gen;}} 
+            		onChange={(option)=> this.setState({generations: option.target.value})}
+        		>
+					<option value="10000"><p>Generations: 10000</p></option>
+					<option value="5000">Generations: 5000</option>
+					<option value="1000">Generaions: 1000</option>
+					<option value="500">Generations: 500</option>
+				</select>
+          		<span> Current Generation: {this.state.currYear} </span>      
+    		</div>
+		</div>
     );
   }
 }
